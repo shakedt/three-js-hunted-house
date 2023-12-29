@@ -27,7 +27,51 @@ const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
 const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
 const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
 doorColorTexture.colorSpace = THREE.SRGBColorSpace
+doorAlphaTexture.colorSpace = THREE.SRGBColorSpace
+doorAmbientOcclusionTexture.colorSpace = THREE.SRGBColorSpace
+doorHeightTexture.colorSpace = THREE.SRGBColorSpace
+doorNormalTexture.colorSpace = THREE.SRGBColorSpace
+doorMetalnessTexture.colorSpace = THREE.SRGBColorSpace
+doorRoughnessTexture.colorSpace = THREE.SRGBColorSpace
 
+
+const bricksColorTexture = textureLoader.load('/textures/bricks/color.jpg')
+const bricksAmbientOcclusionTexture = textureLoader.load('/textures/bricks/ambientOcclusion.jpg')
+const bricksNormalTexture = textureLoader.load('/textures/bricks/normal.jpg')
+const bricksRoughnessTexture = textureLoader.load('/textures/bricks/roughness.jpg')
+bricksColorTexture.colorSpace = THREE.SRGBColorSpace
+bricksAmbientOcclusionTexture.colorSpace = THREE.SRGBColorSpace
+bricksNormalTexture.colorSpace = THREE.SRGBColorSpace
+bricksRoughnessTexture.colorSpace = THREE.SRGBColorSpace
+
+
+const grassColorTexture = textureLoader.load('/textures/grass/color.jpg')
+const grassAmbientOcclusionTexture = textureLoader.load('/textures/grass/ambientOcclusion.jpg')
+const grassNormalTexture = textureLoader.load('/textures/grass/normal.jpg')
+const grassRoughnessTexture = textureLoader.load('/textures/grass/roughness.jpg')
+grassColorTexture.colorSpace = THREE.SRGBColorSpace
+grassAmbientOcclusionTexture.colorSpace = THREE.SRGBColorSpace
+grassNormalTexture.colorSpace = THREE.SRGBColorSpace
+grassRoughnessTexture.colorSpace = THREE.SRGBColorSpace
+
+
+grassColorTexture.repeat.x = 8
+grassColorTexture.repeat.y = 8
+grassAmbientOcclusionTexture.repeat.x = 8
+grassAmbientOcclusionTexture.repeat.y = 8
+grassNormalTexture.repeat.x = 8
+grassNormalTexture.repeat.y = 8
+grassRoughnessTexture.repeat.x = 8
+grassRoughnessTexture.repeat.y = 8
+
+grassColorTexture.wrapS = THREE.RepeatWrapping
+grassColorTexture.wrapT = THREE.RepeatWrapping
+grassAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping
+grassAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping
+grassNormalTexture.wrapS = THREE.RepeatWrapping
+grassNormalTexture.wrapT = THREE.RepeatWrapping
+grassRoughnessTexture.wrapS = THREE.RepeatWrapping
+grassRoughnessTexture.wrapT = THREE.RepeatWrapping
 
 /**
  * House
@@ -39,7 +83,12 @@ scene.add(house)
 // Walls
 const walls = new THREE.Mesh(
     new THREE.BoxGeometry(4, 2.5, 4),
-    new THREE.MeshStandardMaterial({ color: '#ac8e82' })
+    new THREE.MeshStandardMaterial({ 
+        map: bricksColorTexture,
+        aoMap: bricksAmbientOcclusionTexture,
+        normalMap: bricksNormalTexture,
+        roughnessMap: bricksRoughnessTexture
+     })
 )
 walls.position.y = 2.5 / 2
 house.add(walls)
@@ -56,9 +105,20 @@ house.add(roof)
 // Door
 const door = new THREE.Mesh(
     new THREE.PlaneGeometry(2, 2),
-    new THREE.MeshStandardMaterial({ color: '#aa7b7b' })
+    new THREE.MeshStandardMaterial({
+        map: doorColorTexture,
+        alphaMap: doorAlphaTexture,
+        transparent: true,
+        aoMap: doorAmbientOcclusionTexture,
+        displacementMap: doorHeightTexture,
+        displacementScale: 0.1,
+        normalMap: doorNormalTexture,
+        metalnessMap: doorMetalnessTexture,
+        roughnessMap: doorRoughnessTexture
+    })
 )
-door.position.y = 1
+
+door.position.y = 0.9
 door.position.z = 2 + 0.01
 house.add(door)
 
@@ -113,14 +173,15 @@ for (let i = 0; i < 50; i++)
 } 
 
 // Ghosts
-const ghost1 = new THREE.PointLight('#ff00ff', 2, 3)
+const ghost1 = new THREE.PointLight('#ff00ff', 6, 3)
 scene.add(ghost1)
 
-const ghost2 = new THREE.PointLight('#00ffff', 2, 3)
+const ghost2 = new THREE.PointLight('#00ffff', 6, 3)
 scene.add(ghost2)
 
-const ghost3 = new THREE.PointLight('#ffff00', 2, 3)
+const ghost3 = new THREE.PointLight('#ffff00', 6, 3)
 scene.add(ghost3)
+
 
 // Fog
 const fog = new THREE.Fog('#262837', 1, 15)
@@ -129,7 +190,12 @@ scene.fog = fog
 // Floor
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({ color: '#a9c388' })
+    new THREE.MeshStandardMaterial({
+        map: grassColorTexture,
+        aoMap: grassAmbientOcclusionTexture,
+        normalMap: grassNormalTexture,
+        roughnessMap: grassRoughnessTexture
+     })
 )
 floor.rotation.x = - Math.PI * 0.5
 floor.position.y = 0
@@ -223,6 +289,22 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
+    // Update Ghosts
+    const ghost1Angle = elapsedTime * 0.5
+    ghost1.position.x = Math.cos(ghost1Angle) * 4
+    ghost1.position.z = Math.sin(ghost1Angle) * 4
+    ghost1.position.y = Math.sin(elapsedTime * 3)
+
+    const ghost2Angle = - elapsedTime * 0.32
+    ghost2.position.x = Math.cos(ghost2Angle) * 5
+    ghost2.position.z = Math.sin(ghost2Angle) * 5
+    ghost2.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5)
+
+    const ghost3Angle = - elapsedTime * 0.18
+    ghost3.position.x = Math.cos(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.32))
+    ghost3.position.z = Math.sin(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.5))
+    ghost3.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5)
+    
     // Update controls
     controls.update()
 
