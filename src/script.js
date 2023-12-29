@@ -279,6 +279,29 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor('#262837')
+// shadows
+renderer.shadowMap.enabled = true
+
+moonLight.castShadow = true
+doorLight.castShadow = true
+ghost1.castShadow = true
+ghost2.castShadow = true
+ghost3.castShadow = true
+
+walls.castShadow = true
+bush1.castShadow = true
+bush2.castShadow = true
+bush3.castShadow = true
+bush4.castShadow = true
+
+floor.receiveShadow = true
+walls.receiveShadow = true
+roof.receiveShadow = true
+bush1.receiveShadow = true
+bush2.receiveShadow = true
+bush3.receiveShadow = true
+bush4.receiveShadow = true
+graves.receiveShadow = true
 
 /**
  * Animate
@@ -304,7 +327,7 @@ const tick = () =>
     ghost3.position.x = Math.cos(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.32))
     ghost3.position.z = Math.sin(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.5))
     ghost3.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5)
-    
+
     // Update controls
     controls.update()
 
